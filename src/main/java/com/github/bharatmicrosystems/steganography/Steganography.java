@@ -3,14 +3,19 @@ package com.github.bharatmicrosystems.steganography;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class Steganography {
 
 	public void encryptImage(File imageIn, File imageOut, String message) {
 		BufferedImage img = null;
+		String format = null;
 		try {
+			format = getImageFormat(imageIn);
 			img = ImageIO.read(imageIn);
 		} catch (IOException e) {
 			System.out.println(e);
@@ -37,7 +42,7 @@ public class Steganography {
 						int g = (p >> 8) & 0xff;
 						// get blue
 						int b = p & 0xff;
-						a = setLSB(a, 1);
+						r = setLSB(r, 1);
 						img.setRGB(x, y, getPixel(a, r, g, b));
 						c++;
 					} else {
@@ -55,7 +60,7 @@ public class Steganography {
 					int g = (p >> 8) & 0xff;
 					// get blue
 					int b = p & 0xff;
-					a = setLSB(a, Integer.parseInt(""+mess[c]));
+					r = setLSB(r, Integer.parseInt(""+mess[c]));
 					img.setRGB(x, y, getPixel(a, r, g, b));
 					c++;
 				}
@@ -89,10 +94,10 @@ public class Steganography {
 			for (int y = 0; y < height; y++) {
 				// get pixel value
 				int p = img.getRGB(x, y);
-				// get alpha
-				int a = (p >> 24) & 0xff;
+				// get red
+				int r = (p >> 16) & 0xff;
 				if (sb.indexOf("011111111")==-1 || sb.indexOf("111111111")==-1) {
-					sb.append(getLSB(a));
+					sb.append(getLSB(r));
 				} else {
 					break;
 				}
@@ -142,6 +147,18 @@ public class Steganography {
 	
 	private String[] splitByNumber(String str, int size) {
 	    return (size<1 || str==null) ? null : str.split("(?<=\\G.{"+size+"})");
+	}
+	
+	private String getImageFormat(File file) throws IOException{
+		ImageInputStream iis = ImageIO.createImageInputStream(file);
+
+		Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
+
+		while (imageReaders.hasNext()) {
+		    ImageReader reader = (ImageReader) imageReaders.next();
+		    return reader.getFormatName();
+		}
+		return null;
 	}
 
 }
