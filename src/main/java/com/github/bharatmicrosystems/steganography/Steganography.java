@@ -3,19 +3,13 @@ package com.github.bharatmicrosystems.steganography;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 public class Steganography {
 
 	public void encryptImage(File imageIn, File imageOut, String message) {
 		BufferedImage img = null;
-		String format = null;
 		try {
-			format = getImageFormat(imageIn);
 			img = ImageIO.read(imageIn);
 		} catch (IOException e) {
 			System.out.println(e);
@@ -147,18 +141,6 @@ public class Steganography {
 	
 	private String[] splitByNumber(String str, int size) {
 	    return (size<1 || str==null) ? null : str.split("(?<=\\G.{"+size+"})");
-	}
-	
-	private String getImageFormat(File file) throws IOException{
-		ImageInputStream iis = ImageIO.createImageInputStream(file);
-
-		Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
-
-		while (imageReaders.hasNext()) {
-		    ImageReader reader = (ImageReader) imageReaders.next();
-		    return reader.getFormatName();
-		}
-		return null;
 	}
 
 }
